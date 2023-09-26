@@ -97,24 +97,56 @@ def obter_nome_livro_mais_copias(biblioteca_json):
                 livro['copias'] = livros['copias']
     return livro['nome']
 
-def obter_indice_autor(autores,nome_autor):
-    for i,autor in enumerate(autores) :
-        if autor == nome_autor:
-            return i
 
 def obter_nome_autores_livros(biblioteca_json):
     autores = []
     for categoria in biblioteca_json['livros']:
         for livros in biblioteca_json['livros'][categoria]:
-            if livros['autor'] not in autores[]:
-                autores.append({'autor' : livros['autor'], 'livros' : []})
-            indice_autor = obter_indice_autor(autores, livros['autor'])
-            print(indice_autor)
-            print(autores[indice_autor])
-            # if livros['titulo'] not in autores[indice_autor][livros['autor']]:
-            #     autores[indice_autor][livros['autor']].append(livros['titulo'])
-    return autores                
+            if livros['autor'] not in autores:
+                autores.append(livros['autor'])
 
+    livros_autor = {}
+    for autor in autores:
+        livros_autor[autor] = []
+
+    for categoria in biblioteca_json['livros']:
+        for livros in biblioteca_json['livros'][categoria]:
+            if livros['titulo'] not in livros_autor[livros['autor']]:
+                livros_autor[livros['autor']].append(livros['titulo'])
+
+    return livros_autor
+
+def obter_categoria_mais_livros(biblioteca_json):
+    livros_categoria = {}
+    for categoria in biblioteca_json['livros']:
+        livros_categoria[categoria] = 0
+        for livros in biblioteca_json['livros'][categoria]:
+            livros_categoria[categoria] += int(livros['copias'])
+
+    return sorted(livros_categoria.items(), key=lambda x:x[1])[-1]
+
+                   
+def obter_livro_maior_titulo(biblioteca_json):
+    tamanho_maior_titulo = {'titulo' : '', 'tamanho' : 0}
+    for categoria in biblioteca_json['livros']:
+        for livro in biblioteca_json['livros'][categoria]:
+            if len(livro['titulo']) > tamanho_maior_titulo['tamanho']:
+                tamanho_maior_titulo['titulo'] = livro['titulo']
+                tamanho_maior_titulo['tamanho'] = len(livro['titulo'])
+    return tamanho_maior_titulo
+
+def obter_autor_menor_nome(biblioteca_json):
+    autor_menor_nome = {'nome' : ''}
+    for categoria in biblioteca_json['livros']:
+        for livro in biblioteca_json['livros'][categoria]:
+            if autor_menor_nome['nome'] == '':
+                autor_menor_nome['nome'] = livro['autor']
+                autor_menor_nome['tamanho_nome'] = len(livro['autor'])
+            else:
+                if len(livro['autor']) < autor_menor_nome['tamanho_nome']:
+                    autor_menor_nome['nome'] = livro['autor']
+                    autor_menor_nome['tamanho_nome'] = len(livro['autor'])
+    return autor_menor_nome
     
 
 def main():
@@ -129,6 +161,9 @@ def main():
     autor_mais_livros_emprestados = obter_autor_mais_livros_emprestados(biblioteca_json) # 7
     nome_livro_mais_copias = obter_nome_livro_mais_copias(biblioteca_json) # 8
     nome_autores_e_livros = obter_nome_autores_livros(biblioteca_json) # 9
+    categoria_mais_livros = obter_categoria_mais_livros(biblioteca_json) # 10
+    livro_maior_titulo = obter_livro_maior_titulo(biblioteca_json) # 11
+    autor_menor_nome = obter_autor_menor_nome(biblioteca_json) # 12
 
     print(f'#1 Nome biblioteca: {nome_biblioteca}')
     print(f'#2 Numero telefones: {numero_telefones}')
@@ -139,6 +174,9 @@ def main():
     print(f'#7 Autor com maior número de livros emprestados: {autor_mais_livros_emprestados}')
     print(f'#8 Nome do livro com mais cópias: {nome_livro_mais_copias}')
     print(f'#9 Nome de cada autor e seus livros: {nome_autores_e_livros}')
+    print(f'#10 Qual a categoria possui mais livros: {categoria_mais_livros}')
+    print(f'#11 Qual o livro com o maior título: {livro_maior_titulo}')
+    print(f'#12 Qual o autor com o menor nome: {autor_menor_nome}')
 
 
 
